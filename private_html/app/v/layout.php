@@ -6,6 +6,7 @@
   <meta name="generator" content="<?php echo FW_NAME . (APP_ENV != 'prod' ? ' v' . FW_VER : ''); ?>">
   <title><?php echo htmlspecialchars(isset($title) ? $title : APP_TITLE); ?></title>
   <link href="<?php echo url('css/app.css'); ?>?v=<?php echo APP_VER; ?><?php echo (APP_ENV != 'prod' ? '&t=' . time() : ''); ?>" rel="stylesheet">
+  <link rel="icon" href="<?php echo url('favicon.ico'); ?>">
 </head>
 <body class="js">
 
