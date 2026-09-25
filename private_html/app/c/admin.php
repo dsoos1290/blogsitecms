@@ -56,9 +56,62 @@ class Admin extends App {
   public function posts() {
     $this->requireAdmin();
 
+    $settings = $this->settings();
+
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+    $request_path = parse_url($request_uri, PHP_URL_PATH);
+    $admin_posts_path = (BASE_URL !== '' ? BASE_URL : '') . '/admin/posts';
+
+    if ($request_path === $admin_posts_path && isset($_GET['page'])) {
+      $query_page = (int) $_GET['page'];
+      $this->redirect(
+        $query_page > 1
+          ? '/admin/posts/page/' . $query_page
+          : '/admin/posts'
+      );
+    }
+
+    $order = $settings['post_order'] === 'modified_at'
+      ? 'modified_at'
+      : 'created_at';
+
+    $per_page = (int) $settings['posts_per_page'];
+    if ($per_page < 1) {
+      $per_page = 10;
+    }
+
+    if (isset($_GET['page']) && !ctype_digit((string) $_GET['page'])) {
+      header('HTTP/1.1 404 Not Found');
+      die('Page not found.');
+    }
+
+    $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+    if ($page <= 1 && isset($_GET['page'])) {
+      $this->redirect('/admin/posts');
+    }
+
+    $count_result = $this->db->query(
+      "SELECT COUNT(*) AS total FROM " . $this->table('posts')
+    );
+    $count_row = $count_result->fetch_assoc();
+    $total = (int) $count_row['total'];
+    $total_pages = $total > 0 ? (int) ceil($total / $per_page) : 1;
+
+    if ($page > $total_pages) {
+      $this->redirect(
+        $total_pages > 1
+          ? '/admin/posts/page/' . $total_pages
+          : '/admin/posts'
+      );
+    }
+
+    $offset = ($page - 1) * $per_page;
+
     $result = $this->db->query(
       "SELECT id, title, active, show_in_list, show_in_sitemap, created_at, modified_at " .
-      "FROM " . $this->table('posts') . " ORDER BY id DESC"
+      "FROM " . $this->table('posts') . " " .
+      "ORDER BY " . $order . " DESC, id DESC " .
+      "LIMIT " . $offset . ", " . $per_page
     );
 
     $posts = array();
@@ -69,6 +122,8 @@ class Admin extends App {
     $this->set(array(
       'title' => 'Posts',
       'posts' => $posts,
+      'page' => $page,
+      'total_pages' => $total_pages,
       'csrf' => $this->csrfToken()
     ));
     $this->render('admin/posts', 'admin_layout');
@@ -218,6 +273,25 @@ class Admin extends App {
         $language = 'en';
       }
 
+      $page_slug = isset($_POST['page_slug']) ? strtolower(trim($_POST['page_slug'])) : 'page';
+      if (
+        !preg_match('/^[a-z][a-z0-9-]*$/', $page_slug)
+        || $page_slug === 'admin'
+        || $page_slug === 'post'
+      ) {
+        $page_slug = 'page';
+      }
+
+      $continue_text = isset($_POST['continue_text']) ? trim($_POST['continue_text']) : 'Continue';
+      if ($continue_text === '') {
+        $continue_text = 'Continue';
+      }
+
+      $back_text = isset($_POST['back_text']) ? trim($_POST['back_text']) : 'Back';
+      if ($back_text === '') {
+        $back_text = 'Back';
+      }
+
       $this->saveSetting('site_title', isset($_POST['site_title']) ? trim($_POST['site_title']) : '');
       $this->saveSetting('site_description', isset($_POST['site_description']) ? trim($_POST['site_description']) : '');
       $this->saveSetting('disclaimer', isset($_POST['disclaimer']) ? trim($_POST['disclaimer']) : '');
@@ -226,6 +300,9 @@ class Admin extends App {
       $this->saveSetting('posts_per_page', (string) $posts_per_page);
       $this->saveSetting('list_layout', $list_layout);
       $this->saveSetting('language', $language);
+      $this->saveSetting('page_slug', $page_slug);
+      $this->saveSetting('continue_text', $continue_text);
+      $this->saveSetting('back_text', $back_text);
 
       $this->flash('success', 'Settings saved.');
       $this->redirect('/admin/settings');

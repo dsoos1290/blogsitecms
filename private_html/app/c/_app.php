@@ -19,7 +19,10 @@ class App extends C {
       'post_order' => 'created_at',
       'posts_per_page' => '10',
       'list_layout' => 'footer',
-      'language' => APP_LANG
+      'language' => APP_LANG,
+      'page_slug' => 'page',
+      'continue_text' => 'Continue',
+      'back_text' => 'Back'
     );
 
     $result = $this->db->query(

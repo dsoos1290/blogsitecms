@@ -27,7 +27,7 @@ class Sitemap extends App {
 
     while ($row = $result->fetch_assoc()) {
       echo "  <url>\n";
-      echo '    <loc>' . htmlspecialchars($base . '/post?id=' . (int) $row['id'], ENT_QUOTES, 'UTF-8') . "</loc>\n";
+      echo '    <loc>' . htmlspecialchars($base . '/' . (int) $row['id'], ENT_QUOTES, 'UTF-8') . "</loc>\n";
       echo '    <lastmod>' . date('c', strtotime($row['modified_at'])) . "</lastmod>\n";
       echo "  </url>\n";
     }

@@ -6,20 +6,15 @@ return array(
       'class' => 'Pages',
       'action' => 'index'
     ),
-    '/page/{page}' => array(
-      'controller' => 'pages',
-      'class' => 'Pages',
+    '/sitemap.xml' => array(
+      'controller' => 'sitemap',
+      'class' => 'Sitemap',
       'action' => 'index'
     ),
     '/post' => array(
       'controller' => 'pages',
       'class' => 'Pages',
       'action' => 'post'
-    ),
-    '/sitemap.xml' => array(
-      'controller' => 'sitemap',
-      'class' => 'Sitemap',
-      'action' => 'index'
     ),
     '/admin' => array(
       'controller' => 'admin',
@@ -37,6 +32,11 @@ return array(
       'action' => 'logout'
     ),
     '/admin/posts' => array(
+      'controller' => 'admin',
+      'class' => 'Admin',
+      'action' => 'posts'
+    ),
+    '/admin/posts/page/{page}' => array(
       'controller' => 'admin',
       'class' => 'Admin',
       'action' => 'posts'
@@ -60,6 +60,16 @@ return array(
       'controller' => 'admin',
       'class' => 'Admin',
       'action' => 'password'
+    ),
+    '/{page_slug}/{page}' => array(
+      'controller' => 'pages',
+      'class' => 'Pages',
+      'action' => 'index'
+    ),
+    '/{id}' => array(
+      'controller' => 'pages',
+      'class' => 'Pages',
+      'action' => 'post'
     )
   ),
   'POST' => array(

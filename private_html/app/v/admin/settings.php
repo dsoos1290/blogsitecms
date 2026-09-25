@@ -23,6 +23,18 @@
     <input type="text" name="language" value="<?php echo htmlspecialchars($settings['language']); ?>" placeholder="en">
   </label>
 
+  <label>Page slug
+    <input type="text" name="page_slug" value="<?php echo htmlspecialchars($settings['page_slug']); ?>" placeholder="page">
+  </label>
+
+  <label>Continue text
+    <input type="text" name="continue_text" value="<?php echo htmlspecialchars($settings['continue_text']); ?>" placeholder="Continue">
+  </label>
+
+  <label>Back text
+    <input type="text" name="back_text" value="<?php echo htmlspecialchars($settings['back_text']); ?>" placeholder="Back">
+  </label>
+
   <label>Post order
     <select name="post_order">
       <option value="created_at"<?php echo $settings['post_order'] === 'created_at' ? ' selected' : ''; ?>>created_at DESC</option>
