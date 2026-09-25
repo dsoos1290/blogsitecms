@@ -1,6 +1,6 @@
 <h1>Settings</h1>
 
-<form class="admin-card" method="post" action="<?php echo url('/admin/settings'); ?>">
+<form class="admin-card" method="post" action="<?php echo url('/admin/settings'); ?>" enctype="multipart/form-data">
   <input type="hidden" name="_csrf" value="<?php echo htmlspecialchars($csrf); ?>">
 
   <label>Title
@@ -74,6 +74,15 @@
     </select>
   </label>
 
+  <label>Favicon (.ico)
+    <input type="file" name="favicon" accept=".ico,image/x-icon,image/vnd.microsoft.icon">
+    <small>Uploading a file replaces the current public_html/favicon.ico. Maximum size: 1 MB.</small>
+  </label>
+
+  <?php if ($favicon_exists) { ?>
+    <label><input type="checkbox" name="delete_favicon" value="1"> Delete current favicon</label>
+  <?php } ?>
+
   <label>Code before &lt;/head&gt;
     <textarea name="head_code" rows="8"><?php echo htmlspecialchars($settings['head_code']); ?></textarea>
   </label>
@@ -84,3 +93,4 @@
 
   <button type="submit">Save settings</button>
 </form>
+

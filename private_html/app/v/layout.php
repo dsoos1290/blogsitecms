@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="generator" content="<?php echo FW_NAME . (APP_ENV != 'prod' ? ' v' . FW_VER : ''); ?>">
+  <meta name="generator" content="<?php echo APP_NAME . (APP_ENV != 'prod' ? ' v' . APP_VER : ''); ?>">
   <title><?php echo htmlspecialchars(isset($title) ? $title : APP_TITLE); ?></title>
   <?php if (isset($meta_description) && $meta_description !== '') { ?>
     <meta name="description" content="<?php echo htmlspecialchars($meta_description); ?>">
   <?php } ?>
   <link href="<?php echo url('css/app.css'); ?>?v=<?php echo APP_VER; ?><?php echo (APP_ENV != 'prod' ? '&t=' . time() : ''); ?>" rel="stylesheet">
-  <link rel="icon" href="<?php echo url('favicon.ico'); ?>">
+  <?php if (file_exists(ROOT . DS . PUB . DS . 'favicon.ico')) { ?>
+    <link rel="icon" href="<?php echo url('favicon.ico'); ?>">
+  <?php } ?>
   <?php if (isset($settings['head_code']) && $settings['head_code'] !== '') { ?>
 <?php echo $settings['head_code']; ?>
   <?php } ?>
@@ -51,3 +53,4 @@
 <?php } ?>
 </body>
 </html>
+

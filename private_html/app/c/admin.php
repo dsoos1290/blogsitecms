@@ -339,13 +339,62 @@ class Admin extends App {
       $this->saveSetting('head_code', isset($_POST['head_code']) ? $_POST['head_code'] : '');
       $this->saveSetting('body_code', isset($_POST['body_code']) ? $_POST['body_code'] : '');
 
-      $this->flash('success', 'Settings saved.');
+      $favicon_path = ROOT . DS . PUB . DS . 'favicon.ico';
+      $favicon_error = '';
+      $favicon_uploaded = false;
+
+      if (
+        isset($_FILES['favicon'])
+        && isset($_FILES['favicon']['error'])
+        && (int) $_FILES['favicon']['error'] !== UPLOAD_ERR_NO_FILE
+      ) {
+        if ((int) $_FILES['favicon']['error'] !== UPLOAD_ERR_OK) {
+          $favicon_error = 'Favicon upload failed.';
+        } elseif (!isset($_FILES['favicon']['size']) || (int) $_FILES['favicon']['size'] > 1048576) {
+          $favicon_error = 'Favicon must be 1 MB or smaller.';
+        } else {
+          $extension = isset($_FILES['favicon']['name'])
+            ? strtolower(pathinfo($_FILES['favicon']['name'], PATHINFO_EXTENSION))
+            : '';
+          $tmp_name = isset($_FILES['favicon']['tmp_name']) ? $_FILES['favicon']['tmp_name'] : '';
+          $handle = $tmp_name !== '' ? @fopen($tmp_name, 'rb') : false;
+          $header = $handle ? fread($handle, 4) : false;
+          if ($handle) {
+            fclose($handle);
+          }
+
+          if ($extension !== 'ico' || $header !== "\x00\x00\x01\x00") {
+            $favicon_error = 'Please upload a valid .ico file.';
+          } elseif (!move_uploaded_file($tmp_name, $favicon_path)) {
+            $favicon_error = 'Favicon could not be saved.';
+          } else {
+            $favicon_uploaded = true;
+          }
+        }
+      }
+
+      if (
+        !$favicon_uploaded
+        && $favicon_error === ''
+        && isset($_POST['delete_favicon'])
+        && file_exists($favicon_path)
+        && !@unlink($favicon_path)
+      ) {
+        $favicon_error = 'Favicon could not be deleted.';
+      }
+
+      if ($favicon_error !== '') {
+        $this->flash('error', $favicon_error);
+      } else {
+        $this->flash('success', 'Settings saved.');
+      }
       $this->redirect('/admin/settings');
     }
 
     $this->set(array(
       'title' => 'Settings',
       'settings' => $this->settings(),
+      'favicon_exists' => file_exists(ROOT . DS . PUB . DS . 'favicon.ico'),
       'csrf' => $this->csrfToken()
     ));
     $this->render('admin/settings', 'admin_layout');
@@ -393,3 +442,4 @@ class Admin extends App {
     $this->render('admin/password', 'admin_layout');
   }
 }
+
