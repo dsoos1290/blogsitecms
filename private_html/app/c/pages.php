@@ -8,8 +8,20 @@ class Pages extends App {
     $settings = $this->settings();
 
     $page_slug = isset($settings['page_slug']) ? trim($settings['page_slug']) : 'page';
-    if (!preg_match('/^[a-z][a-z0-9-]*$/', $page_slug)) {
+    if (!preg_match('/^[a-z][a-z0-9-]*$/', $page_slug) || $page_slug === 'admin') {
       $page_slug = 'page';
+    }
+
+    $post_slug = isset($settings['post_slug']) ? trim($settings['post_slug']) : '';
+    if (
+      $post_slug !== ''
+      && (
+        !preg_match('/^[a-z][a-z0-9-]*$/', $post_slug)
+        || $post_slug === 'admin'
+        || $post_slug === $page_slug
+      )
+    ) {
+      $post_slug = '';
     }
 
     $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
@@ -18,23 +30,25 @@ class Pages extends App {
 
     if (
       isset($_GET['page'])
-      && !isset($_GET['page_slug'])
+      && !isset($_GET['slug'])
       && ($request_path === $home_path || $request_path === rtrim($home_path, '/'))
     ) {
       $query_page = (int) $_GET['page'];
       $this->redirect($query_page > 1 ? '/' . $page_slug . '/' . $query_page : '/');
     }
 
-    if (isset($_GET['page_slug'])) {
-      if ($_GET['page_slug'] !== $page_slug) {
+    if (isset($_GET['slug'])) {
+      if ($_GET['slug'] !== $page_slug) {
         header('HTTP/1.1 404 Not Found');
         die('Page not found.');
       }
 
-      if (!isset($_GET['page']) || !ctype_digit((string) $_GET['page'])) {
+      if (!isset($_GET['value']) || !ctype_digit((string) $_GET['value'])) {
         header('HTTP/1.1 404 Not Found');
         die('Page not found.');
       }
+
+      $_GET['page'] = $_GET['value'];
 
       if ((int) $_GET['page'] <= 1) {
         $this->redirect('/');
@@ -93,13 +107,75 @@ class Pages extends App {
       'posts' => $posts,
       'page' => $page,
       'page_slug' => $page_slug,
+      'post_slug' => $post_slug,
       'total_pages' => $total_pages,
-      'date_field' => $order
+      'date_field' => $order,
+      'is_post' => false
     ));
     $this->render('pages/index');
   }
 
+  public function slugged() {
+    $settings = $this->settings();
+
+    if (
+      !isset($_GET['slug'])
+      || !isset($_GET['value'])
+      || !ctype_digit((string) $_GET['value'])
+    ) {
+      header('HTTP/1.1 404 Not Found');
+      die('Page not found.');
+    }
+
+    $page_slug = isset($settings['page_slug']) ? trim($settings['page_slug']) : 'page';
+    if (!preg_match('/^[a-z][a-z0-9-]*$/', $page_slug) || $page_slug === 'admin') {
+      $page_slug = 'page';
+    }
+
+    $post_slug = isset($settings['post_slug']) ? trim($settings['post_slug']) : '';
+    if (
+      $post_slug !== ''
+      && (
+        !preg_match('/^[a-z][a-z0-9-]*$/', $post_slug)
+        || $post_slug === 'admin'
+        || $post_slug === $page_slug
+      )
+    ) {
+      $post_slug = '';
+    }
+
+    if ($_GET['slug'] === $page_slug) {
+      $this->index();
+      return;
+    }
+
+    if ($post_slug !== '' && $_GET['slug'] === $post_slug) {
+      $_GET['id'] = $_GET['value'];
+      $this->post();
+      return;
+    }
+
+    header('HTTP/1.1 404 Not Found');
+    die('Page not found.');
+  }
+
   public function post() {
+    $settings = $this->settings();
+
+    $post_slug = isset($settings['post_slug']) ? trim($settings['post_slug']) : '';
+    $page_slug = isset($settings['page_slug']) ? trim($settings['page_slug']) : 'page';
+
+    if (
+      $post_slug !== ''
+      && (
+        !preg_match('/^[a-z][a-z0-9-]*$/', $post_slug)
+        || $post_slug === 'admin'
+        || $post_slug === $page_slug
+      )
+    ) {
+      $post_slug = '';
+    }
+
     $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
     $request_path = parse_url($request_uri, PHP_URL_PATH);
     $legacy_post_path = (BASE_URL !== '' ? BASE_URL : '') . '/post';
@@ -107,7 +183,11 @@ class Pages extends App {
     if ($request_path === $legacy_post_path && isset($_GET['id'])) {
       $legacy_id = (int) $_GET['id'];
       if ($legacy_id > 0) {
-        $this->redirect('/' . $legacy_id);
+        $this->redirect(
+          $post_slug !== ''
+            ? '/' . $post_slug . '/' . $legacy_id
+            : '/' . $legacy_id
+        );
       }
     }
 
@@ -117,6 +197,14 @@ class Pages extends App {
     }
 
     $id = (int) $_GET['id'];
+
+    if ($post_slug !== '' && !isset($_GET['slug'])) {
+      $this->redirect('/' . $post_slug . '/' . $id);
+    }
+
+    if ($post_slug === '' && isset($_GET['slug'])) {
+      $this->redirect('/' . $id);
+    }
 
     $result = $this->db->query(
       "SELECT id, title, content, created_at, modified_at " .
@@ -131,8 +219,6 @@ class Pages extends App {
       die('Post not found.');
     }
 
-    $settings = $this->settings();
-
     $order = $settings['post_order'] === 'modified_at'
       ? 'modified_at'
       : 'created_at';
@@ -142,7 +228,8 @@ class Pages extends App {
       'meta_description' => $settings['site_description'],
       'settings' => $settings,
       'post' => $post,
-      'date_field' => $order
+      'date_field' => $order,
+      'is_post' => true
     ));
     $this->render('pages/post');
   }

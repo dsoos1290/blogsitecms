@@ -3,16 +3,21 @@
 <?php } ?>
 
 <?php foreach ($posts as $post) { ?>
+  <?php
+  $post_path = $post_slug !== ''
+    ? '/' . $post_slug . '/' . (int) $post['id']
+    : '/' . (int) $post['id'];
+  ?>
   <article class="post-card">
-    <h2><a href="<?php echo url('/' . (int) $post['id']); ?>"><?php echo htmlspecialchars($post['title']); ?></a></h2>
+    <h2><a href="<?php echo url($post_path); ?>"><?php echo htmlspecialchars($post['title']); ?></a></h2>
     <div class="post-content"><?php echo $post['content']; ?></div>
 
     <?php if ($settings['list_layout'] === 'footer') { ?>
       <div class="post-footer">
         <time datetime="<?php echo htmlspecialchars($post[$date_field]); ?>">
-          <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($post[$date_field])) . ' ' . APP_TZ); ?>
+          <?php echo htmlspecialchars(date($settings['date_format'], strtotime($post[$date_field])) . ' ' . APP_TZ); ?>
         </time>
-        <a class="button" href="<?php echo url('/' . (int) $post['id']); ?>"><?php echo htmlspecialchars($settings['continue_text']); ?></a>
+        <a class="button" href="<?php echo url($post_path); ?>"><?php echo htmlspecialchars($settings['continue_text']); ?></a>
       </div>
     <?php } ?>
   </article>

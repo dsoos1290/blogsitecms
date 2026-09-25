@@ -23,8 +23,23 @@
     <input type="text" name="language" value="<?php echo htmlspecialchars($settings['language']); ?>" placeholder="en">
   </label>
 
+  <label>Text direction
+    <select name="direction">
+      <option value="ltr"<?php echo $settings['direction'] === 'ltr' ? ' selected' : ''; ?>>LTR</option>
+      <option value="rtl"<?php echo $settings['direction'] === 'rtl' ? ' selected' : ''; ?>>RTL</option>
+    </select>
+  </label>
+
+  <label>Date format
+    <input type="text" name="date_format" value="<?php echo htmlspecialchars($settings['date_format']); ?>" placeholder="Y-m-d H:i">
+  </label>
+
   <label>Page slug
     <input type="text" name="page_slug" value="<?php echo htmlspecialchars($settings['page_slug']); ?>" placeholder="page">
+  </label>
+
+  <label>Post slug
+    <input type="text" name="post_slug" value="<?php echo htmlspecialchars($settings['post_slug']); ?>" placeholder="post">
   </label>
 
   <label>Continue text
@@ -51,6 +66,14 @@
       <option value="simple"<?php echo $settings['list_layout'] === 'simple' ? ' selected' : ''; ?>>Title + content only</option>
       <option value="footer"<?php echo $settings['list_layout'] === 'footer' ? ' selected' : ''; ?>>Title + content + date + Continue button</option>
     </select>
+  </label>
+
+  <label>Code before &lt;/head&gt;
+    <textarea name="head_code" rows="8"><?php echo htmlspecialchars($settings['head_code']); ?></textarea>
+  </label>
+
+  <label>Code before &lt;/body&gt;
+    <textarea name="body_code" rows="8"><?php echo htmlspecialchars($settings['body_code']); ?></textarea>
   </label>
 
   <button type="submit">Save settings</button>

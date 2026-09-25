@@ -41,7 +41,12 @@ INSERT INTO `settings` (`key`, `value`) VALUES
   ('posts_per_page', '10'),
   ('list_layout', 'footer'),
   ('language', 'en'),
+  ('direction', 'ltr'),
+  ('date_format', 'Y-m-d H:i'),
   ('page_slug', 'page'),
+  ('post_slug', ''),
   ('continue_text', 'Continue'),
-  ('back_text', 'Back')
+  ('back_text', 'Back'),
+  ('head_code', ''),
+  ('body_code', '')
 ON DUPLICATE KEY UPDATE `key` = VALUES(`key`);

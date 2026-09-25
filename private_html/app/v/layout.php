@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?php echo htmlspecialchars(isset($settings['language']) ? $settings['language'] : APP_LANG); ?>">
+<html lang="<?php echo htmlspecialchars(isset($settings['language']) ? $settings['language'] : APP_LANG); ?>" dir="<?php echo htmlspecialchars(isset($settings['direction']) && $settings['direction'] === 'rtl' ? 'rtl' : 'ltr'); ?>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,11 +10,18 @@
   <?php } ?>
   <link href="<?php echo url('css/app.css'); ?>?v=<?php echo APP_VER; ?><?php echo (APP_ENV != 'prod' ? '&t=' . time() : ''); ?>" rel="stylesheet">
   <link rel="icon" href="<?php echo url('favicon.ico'); ?>">
+  <?php if (isset($settings['head_code']) && $settings['head_code'] !== '') { ?>
+<?php echo $settings['head_code']; ?>
+  <?php } ?>
 </head>
 <body>
 <div class="site-container">
   <header class="site-header">
-    <a class="site-title" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a>
+    <?php if (isset($is_post) && $is_post) { ?>
+      <a class="site-title" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a>
+    <?php } else { ?>
+      <h1><a class="site-title" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a></h1>
+    <?php } ?>
     <?php if ($settings['site_description'] !== '') { ?>
       <p><?php echo nl2br(htmlspecialchars($settings['site_description'])); ?></p>
     <?php } ?>
@@ -39,5 +46,8 @@
     <?php } ?>
   </footer>
 </div>
+<?php if (isset($settings['body_code']) && $settings['body_code'] !== '') { ?>
+<?php echo $settings['body_code']; ?>
+<?php } ?>
 </body>
 </html>

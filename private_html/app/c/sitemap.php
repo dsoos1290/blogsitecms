@@ -12,6 +12,20 @@ class Sitemap extends App {
       $base = $scheme . '://' . $host . BASE_URL;
     }
 
+    $page_slug = isset($settings['page_slug']) ? trim($settings['page_slug']) : 'page';
+    $post_slug = isset($settings['post_slug']) ? trim($settings['post_slug']) : '';
+
+    if (
+      $post_slug !== ''
+      && (
+        !preg_match('/^[a-z][a-z0-9-]*$/', $post_slug)
+        || $post_slug === 'admin'
+        || $post_slug === $page_slug
+      )
+    ) {
+      $post_slug = '';
+    }
+
     $result = $this->db->query(
       "SELECT id, modified_at FROM " . $this->table('posts') .
       " WHERE active = 1 AND show_in_sitemap = 1 ORDER BY modified_at DESC"
@@ -26,8 +40,12 @@ class Sitemap extends App {
     echo "  </url>\n";
 
     while ($row = $result->fetch_assoc()) {
+      $post_path = $post_slug !== ''
+        ? '/' . $post_slug . '/' . (int) $row['id']
+        : '/' . (int) $row['id'];
+
       echo "  <url>\n";
-      echo '    <loc>' . htmlspecialchars($base . '/' . (int) $row['id'], ENT_QUOTES, 'UTF-8') . "</loc>\n";
+      echo '    <loc>' . htmlspecialchars($base . $post_path, ENT_QUOTES, 'UTF-8') . "</loc>\n";
       echo '    <lastmod>' . date('c', strtotime($row['modified_at'])) . "</lastmod>\n";
       echo "  </url>\n";
     }

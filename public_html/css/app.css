@@ -30,6 +30,10 @@ a {
   border-bottom: 1px solid #ddd;
 }
 
+.site-header h1 {
+  margin: 0;
+}
+
 .site-title {
   display: inline-block;
   font-size: 2rem;

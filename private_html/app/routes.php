@@ -61,10 +61,10 @@ return array(
       'class' => 'Admin',
       'action' => 'password'
     ),
-    '/{page_slug}/{page}' => array(
+    '/{slug}/{value}' => array(
       'controller' => 'pages',
       'class' => 'Pages',
-      'action' => 'index'
+      'action' => 'slugged'
     ),
     '/{id}' => array(
       'controller' => 'pages',

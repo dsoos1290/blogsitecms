@@ -20,9 +20,14 @@ class App extends C {
       'posts_per_page' => '10',
       'list_layout' => 'footer',
       'language' => APP_LANG,
+      'direction' => 'ltr',
+      'date_format' => 'Y-m-d H:i',
       'page_slug' => 'page',
+      'post_slug' => '',
       'continue_text' => 'Continue',
-      'back_text' => 'Back'
+      'back_text' => 'Back',
+      'head_code' => '',
+      'body_code' => ''
     );
 
     $result = $this->db->query(

@@ -256,6 +256,7 @@ class Admin extends App {
       $post_order = isset($_POST['post_order']) && $_POST['post_order'] === 'modified_at'
         ? 'modified_at'
         : 'created_at';
+
       $posts_per_page = isset($_POST['posts_per_page']) ? (int) $_POST['posts_per_page'] : 10;
       if ($posts_per_page < 1) {
         $posts_per_page = 1;
@@ -273,13 +274,36 @@ class Admin extends App {
         $language = 'en';
       }
 
+      $direction = isset($_POST['direction']) && $_POST['direction'] === 'rtl'
+        ? 'rtl'
+        : 'ltr';
+
+      $date_format = isset($_POST['date_format']) ? trim($_POST['date_format']) : 'Y-m-d H:i';
+      if ($date_format === '') {
+        $date_format = 'Y-m-d H:i';
+      }
+
       $page_slug = isset($_POST['page_slug']) ? strtolower(trim($_POST['page_slug'])) : 'page';
       if (
         !preg_match('/^[a-z][a-z0-9-]*$/', $page_slug)
         || $page_slug === 'admin'
-        || $page_slug === 'post'
       ) {
         $page_slug = 'page';
+      }
+
+      $post_slug = isset($_POST['post_slug']) ? strtolower(trim($_POST['post_slug'])) : '';
+      if (
+        $post_slug !== ''
+        && (
+          !preg_match('/^[a-z][a-z0-9-]*$/', $post_slug)
+          || $post_slug === 'admin'
+        )
+      ) {
+        $post_slug = '';
+      }
+
+      if ($post_slug !== '' && $post_slug === $page_slug) {
+        $post_slug = '';
       }
 
       $continue_text = isset($_POST['continue_text']) ? trim($_POST['continue_text']) : 'Continue';
@@ -300,9 +324,14 @@ class Admin extends App {
       $this->saveSetting('posts_per_page', (string) $posts_per_page);
       $this->saveSetting('list_layout', $list_layout);
       $this->saveSetting('language', $language);
+      $this->saveSetting('direction', $direction);
+      $this->saveSetting('date_format', $date_format);
       $this->saveSetting('page_slug', $page_slug);
+      $this->saveSetting('post_slug', $post_slug);
       $this->saveSetting('continue_text', $continue_text);
       $this->saveSetting('back_text', $back_text);
+      $this->saveSetting('head_code', isset($_POST['head_code']) ? $_POST['head_code'] : '');
+      $this->saveSetting('body_code', isset($_POST['body_code']) ? $_POST['body_code'] : '');
 
       $this->flash('success', 'Settings saved.');
       $this->redirect('/admin/settings');
