@@ -15,7 +15,7 @@
     <?php if ($settings['list_layout'] === 'footer') { ?>
       <div class="post-footer">
         <time datetime="<?php echo htmlspecialchars($post[$date_field]); ?>">
-          <?php echo htmlspecialchars(date($settings['date_format'], strtotime($post[$date_field])) . ' ' . APP_TZ); ?>
+          <?php echo htmlspecialchars($post['display_date']); ?>
         </time>
         <a class="button" href="<?php echo url($post_path); ?>"><?php echo htmlspecialchars($settings['continue_text']); ?></a>
       </div>

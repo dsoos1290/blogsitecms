@@ -97,6 +97,11 @@ class Pages extends App {
 
     $posts = array();
     while ($row = $result->fetch_assoc()) {
+      $row['display_date'] = $this->formatDate(
+        $row[$order],
+        $settings['date_format'],
+        $settings['timezone']
+      );
       $posts[] = $row;
     }
 
@@ -222,6 +227,12 @@ class Pages extends App {
     $order = $settings['post_order'] === 'modified_at'
       ? 'modified_at'
       : 'created_at';
+
+    $post['display_date'] = $this->formatDate(
+      $post[$order],
+      $settings['date_format'],
+      $settings['timezone']
+    );
 
     $this->set(array(
       'title' => $post['title'] . ' - ' . $settings['site_title'],

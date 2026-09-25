@@ -32,6 +32,12 @@
 
   <label>Date format
     <input type="text" name="date_format" value="<?php echo htmlspecialchars($settings['date_format']); ?>" placeholder="Y-m-d H:i">
+    <small>PHP date format. Use T for timezone abbreviation or e for timezone identifier.</small>
+  </label>
+
+  <label>Post timezone
+    <input type="text" name="timezone" value="<?php echo htmlspecialchars($settings['timezone']); ?>" placeholder="Europe/Budapest">
+    <small>Use an IANA timezone such as Europe/Budapest. Daylight saving time is handled automatically.</small>
   </label>
 
   <label>Page slug
@@ -64,7 +70,7 @@
   <label>Post list style
     <select name="list_layout">
       <option value="simple"<?php echo $settings['list_layout'] === 'simple' ? ' selected' : ''; ?>>Title + content only</option>
-      <option value="footer"<?php echo $settings['list_layout'] === 'footer' ? ' selected' : ''; ?>>Title + content + date + Continue button</option>
+      <option value="footer"<?php echo $settings['list_layout'] === 'footer' ? ' selected' : ''; ?>>Title + content + date + Continue/Back button</option>
     </select>
   </label>
 

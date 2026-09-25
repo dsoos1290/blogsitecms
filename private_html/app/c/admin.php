@@ -283,6 +283,11 @@ class Admin extends App {
         $date_format = 'Y-m-d H:i';
       }
 
+      $timezone = isset($_POST['timezone']) ? trim($_POST['timezone']) : (defined('APP_TZ') ? APP_TZ : 'UTC');
+      if (!in_array($timezone, timezone_identifiers_list(), true)) {
+        $timezone = defined('APP_TZ') ? APP_TZ : 'UTC';
+      }
+
       $page_slug = isset($_POST['page_slug']) ? strtolower(trim($_POST['page_slug'])) : 'page';
       if (
         !preg_match('/^[a-z][a-z0-9-]*$/', $page_slug)
@@ -326,6 +331,7 @@ class Admin extends App {
       $this->saveSetting('language', $language);
       $this->saveSetting('direction', $direction);
       $this->saveSetting('date_format', $date_format);
+      $this->saveSetting('timezone', $timezone);
       $this->saveSetting('page_slug', $page_slug);
       $this->saveSetting('post_slug', $post_slug);
       $this->saveSetting('continue_text', $continue_text);

@@ -22,6 +22,7 @@ class App extends C {
       'language' => APP_LANG,
       'direction' => 'ltr',
       'date_format' => 'Y-m-d H:i',
+      'timezone' => defined('APP_TZ') ? APP_TZ : 'UTC',
       'page_slug' => 'page',
       'post_slug' => '',
       'continue_text' => 'Continue',
@@ -132,6 +133,30 @@ class App extends C {
     }
 
     return $result === 0;
+  }
+
+  protected function formatDate($value, $format, $timezone) {
+    if ($format === '') {
+      $format = 'Y-m-d H:i';
+    }
+
+    if (!in_array($timezone, timezone_identifiers_list(), true)) {
+      $timezone = defined('APP_TZ') ? APP_TZ : 'UTC';
+    }
+
+    try {
+      $source_timezone = new DateTimeZone(defined('APP_TZ') ? APP_TZ : 'UTC');
+      $date = DateTime::createFromFormat('Y-m-d H:i:s', $value, $source_timezone);
+
+      if (!$date) {
+        $date = new DateTime($value, $source_timezone);
+      }
+
+      $date->setTimezone(new DateTimeZone($timezone));
+      return $date->format($format);
+    } catch (Exception $e) {
+      return $value;
+    }
   }
 
   protected function requestIsPost() {

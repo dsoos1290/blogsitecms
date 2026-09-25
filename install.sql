@@ -43,6 +43,7 @@ INSERT INTO `settings` (`key`, `value`) VALUES
   ('language', 'en'),
   ('direction', 'ltr'),
   ('date_format', 'Y-m-d H:i'),
+  ('timezone', 'UTC'),
   ('page_slug', 'page'),
   ('post_slug', ''),
   ('continue_text', 'Continue'),

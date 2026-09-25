@@ -10,6 +10,7 @@
     <table class="admin-table">
       <thead>
         <tr>
+          <th>#</th>
           <th>Title</th>
           <th>Active</th>
           <th>List</th>
@@ -22,6 +23,7 @@
       <tbody>
         <?php foreach ($posts as $post) { ?>
           <tr>
+            <td><?php echo (int) $post['id']; ?></td>
             <td><?php echo htmlspecialchars($post['title']); ?></td>
             <td><?php echo $post['active'] ? 'Yes' : 'No'; ?></td>
             <td><?php echo $post['show_in_list'] ? 'Yes' : 'No'; ?></td>
