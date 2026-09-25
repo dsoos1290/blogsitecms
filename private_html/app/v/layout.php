@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="<?php echo APP_NAME . (APP_ENV != 'prod' ? ' v' . APP_VER : ''); ?>">
+  <meta name="framework" content="<?php echo FW_NAME . (APP_ENV != 'prod' ? ' v' . FW_VER : ''); ?>">
   <title><?php echo htmlspecialchars(isset($title) ? $title : APP_TITLE); ?></title>
   <?php if (isset($meta_description) && $meta_description !== '') { ?>
     <meta name="description" content="<?php echo htmlspecialchars($meta_description); ?>">

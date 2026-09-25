@@ -79,9 +79,15 @@
     <small>Uploading a file replaces the current public_html/favicon.ico. Maximum size: 1 MB.</small>
   </label>
 
+  <?php if ($default_favicon_exists) { ?>
+    <label><input type="checkbox" name="restore_favicon" value="1"> Restore default favicon</label>
+  <?php } ?>
+
   <?php if ($favicon_exists) { ?>
     <label><input type="checkbox" name="delete_favicon" value="1"> Delete current favicon</label>
   <?php } ?>
+
+  <small>If a new favicon is uploaded, it takes priority. Otherwise restore takes priority over delete.</small>
 
   <label>Code before &lt;/head&gt;
     <textarea name="head_code" rows="8"><?php echo htmlspecialchars($settings['head_code']); ?></textarea>

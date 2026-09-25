@@ -250,6 +250,20 @@ class Admin extends App {
   public function settingsPage() {
     $this->requireAdmin();
 
+    $favicon_path = ROOT . DS . PUB . DS . 'favicon.ico';
+    $default_favicon_dir = ROOT . DS . PRIV . DS . APP . DS . 'assets';
+    $default_favicon_path = $default_favicon_dir . DS . 'favicon.ico';
+
+    if (!file_exists($default_favicon_path) && file_exists($favicon_path)) {
+      if (!is_dir($default_favicon_dir)) {
+        @mkdir($default_favicon_dir, 0777, true);
+      }
+
+      if (is_dir($default_favicon_dir)) {
+        @copy($favicon_path, $default_favicon_path);
+      }
+    }
+
     if ($this->requestIsPost()) {
       $this->checkCsrf();
 
@@ -339,9 +353,9 @@ class Admin extends App {
       $this->saveSetting('head_code', isset($_POST['head_code']) ? $_POST['head_code'] : '');
       $this->saveSetting('body_code', isset($_POST['body_code']) ? $_POST['body_code'] : '');
 
-      $favicon_path = ROOT . DS . PUB . DS . 'favicon.ico';
       $favicon_error = '';
       $favicon_uploaded = false;
+      $favicon_restored = false;
 
       if (
         isset($_FILES['favicon'])
@@ -376,6 +390,21 @@ class Admin extends App {
       if (
         !$favicon_uploaded
         && $favicon_error === ''
+        && isset($_POST['restore_favicon'])
+      ) {
+        if (!file_exists($default_favicon_path)) {
+          $favicon_error = 'Default favicon is not available.';
+        } elseif (!@copy($default_favicon_path, $favicon_path)) {
+          $favicon_error = 'Default favicon could not be restored.';
+        } else {
+          $favicon_restored = true;
+        }
+      }
+
+      if (
+        !$favicon_uploaded
+        && !$favicon_restored
+        && $favicon_error === ''
         && isset($_POST['delete_favicon'])
         && file_exists($favicon_path)
         && !@unlink($favicon_path)
@@ -385,6 +414,8 @@ class Admin extends App {
 
       if ($favicon_error !== '') {
         $this->flash('error', $favicon_error);
+      } elseif ($favicon_restored) {
+        $this->flash('success', 'Default favicon restored.');
       } else {
         $this->flash('success', 'Settings saved.');
       }
@@ -394,7 +425,8 @@ class Admin extends App {
     $this->set(array(
       'title' => 'Settings',
       'settings' => $this->settings(),
-      'favicon_exists' => file_exists(ROOT . DS . PUB . DS . 'favicon.ico'),
+      'favicon_exists' => file_exists($favicon_path),
+      'default_favicon_exists' => file_exists($default_favicon_path),
       'csrf' => $this->csrfToken()
     ));
     $this->render('admin/settings', 'admin_layout');
