@@ -78,11 +78,16 @@ class Pages extends App {
 
     $settings = $this->settings();
 
+    $order = $settings['post_order'] === 'modified_at'
+      ? 'modified_at'
+      : 'created_at';
+
     $this->set(array(
       'title' => $post['title'] . ' - ' . $settings['site_title'],
       'meta_description' => $settings['site_description'],
       'settings' => $settings,
-      'post' => $post
+      'post' => $post,
+      'date_field' => $order
     ));
     $this->render('pages/post');
   }

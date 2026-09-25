@@ -10,7 +10,7 @@
     <?php if ($settings['list_layout'] === 'footer') { ?>
       <div class="post-footer">
         <time datetime="<?php echo htmlspecialchars($post[$date_field]); ?>">
-          <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($post[$date_field]))); ?>
+          <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($post[$date_field])) . ' ' . APP_TZ); ?>
         </time>
         <a class="button" href="<?php echo url('/post?id=' . (int) $post['id']); ?>">Continue</a>
       </div>
