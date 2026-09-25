@@ -19,12 +19,44 @@
 <?php } ?>
 
 <?php if ($total_pages > 1) { ?>
+  <?php
+  $pagination_items = array();
+
+  if ($total_pages <= 9) {
+    for ($i = 1; $i <= $total_pages; $i++) {
+      $pagination_items[] = $i;
+    }
+  } elseif ($page <= 4) {
+    for ($i = 1; $i <= 5; $i++) {
+      $pagination_items[] = $i;
+    }
+    $pagination_items[] = 'ellipsis';
+    $pagination_items[] = $total_pages;
+  } elseif ($page >= $total_pages - 3) {
+    $pagination_items[] = 1;
+    $pagination_items[] = 'ellipsis';
+    for ($i = $total_pages - 4; $i <= $total_pages; $i++) {
+      $pagination_items[] = $i;
+    }
+  } else {
+    $pagination_items[] = 1;
+    $pagination_items[] = 'ellipsis';
+    for ($i = $page - 2; $i <= $page + 2; $i++) {
+      $pagination_items[] = $i;
+    }
+    $pagination_items[] = 'ellipsis';
+    $pagination_items[] = $total_pages;
+  }
+  ?>
+
   <nav class="pagination" aria-label="Pagination">
-    <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
-      <?php if ($i === $page) { ?>
-        <span class="current"><?php echo $i; ?></span>
+    <?php foreach ($pagination_items as $item) { ?>
+      <?php if ($item === 'ellipsis') { ?>
+        <span class="ellipsis">&hellip;</span>
+      <?php } elseif ($item === $page) { ?>
+        <span class="current"><?php echo $item; ?></span>
       <?php } else { ?>
-        <a href="<?php echo url('/?page=' . $i); ?>"><?php echo $i; ?></a>
+        <a href="<?php echo url($item === 1 ? '/' : '/page/' . $item); ?>"><?php echo $item; ?></a>
       <?php } ?>
     <?php } ?>
   </nav>

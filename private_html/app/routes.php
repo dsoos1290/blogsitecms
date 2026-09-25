@@ -6,6 +6,11 @@ return array(
       'class' => 'Pages',
       'action' => 'index'
     ),
+    '/page/{page}' => array(
+      'controller' => 'pages',
+      'class' => 'Pages',
+      'action' => 'index'
+    ),
     '/post' => array(
       'controller' => 'pages',
       'class' => 'Pages',

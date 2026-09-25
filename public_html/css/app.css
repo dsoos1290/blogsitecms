@@ -123,6 +123,13 @@ button {
   border-color: #222;
 }
 
+.pagination .ellipsis {
+  min-width: 24px;
+  padding: 7px 0;
+  text-align: center;
+  color: #777;
+}
+
 .site-footer {
   border-top: 1px solid #ddd;
   color: #666;

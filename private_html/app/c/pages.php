@@ -7,6 +7,29 @@ class Pages extends App {
   public function index() {
     $settings = $this->settings();
 
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+    $request_path = parse_url($request_uri, PHP_URL_PATH);
+    $home_path = BASE_URL !== '' ? BASE_URL . '/' : '/';
+
+    if (
+      isset($_GET['page'])
+      && ($request_path === $home_path || $request_path === rtrim($home_path, '/'))
+    ) {
+      $query_page = (int) $_GET['page'];
+      $this->redirect($query_page > 1 ? '/page/' . $query_page : '/');
+    }
+
+    if (preg_match('#/page/([^/]+)$#', $request_path, $matches)) {
+      if (!ctype_digit($matches[1])) {
+        header('HTTP/1.1 404 Not Found');
+        die('Page not found.');
+      }
+
+      if ((int) $matches[1] <= 1) {
+        $this->redirect('/');
+      }
+    }
+
     $order = $settings['post_order'] === 'modified_at'
       ? 'modified_at'
       : 'created_at';
@@ -30,7 +53,7 @@ class Pages extends App {
     $total_pages = $total > 0 ? (int) ceil($total / $per_page) : 1;
 
     if ($page > $total_pages) {
-      $page = $total_pages;
+      $this->redirect($total_pages > 1 ? '/page/' . $total_pages : '/');
     }
 
     $offset = ($page - 1) * $per_page;
