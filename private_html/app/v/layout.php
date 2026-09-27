@@ -10,7 +10,9 @@
     <meta name="description" content="<?php echo htmlspecialchars($meta_description); ?>">
   <?php } ?>
   <link href="<?php echo url('css/app.css'); ?>?v=<?php echo APP_VER; ?><?php echo (APP_ENV != 'prod' ? '&t=' . time() : ''); ?>" rel="stylesheet">
-  <?php if (file_exists(ROOT . DS . PUB . DS . 'favicon.ico')) { ?>
+  <?php if (isset($page_favicon) && $page_favicon !== '') { ?>
+    <link rel="icon" href="<?php echo htmlspecialchars(url($page_favicon), ENT_QUOTES, 'UTF-8'); ?>">
+  <?php } elseif (file_exists(ROOT . DS . PUB . DS . 'favicon.ico')) { ?>
     <link rel="icon" href="<?php echo url('favicon.ico'); ?>">
   <?php } ?>
   <?php if (isset($settings['head_code']) && $settings['head_code'] !== '') { ?>
