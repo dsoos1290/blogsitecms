@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
+  `slug` varchar(191) DEFAULT NULL,
   `content` longtext NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `show_in_list` tinyint(1) NOT NULL DEFAULT 1,
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
   KEY `list_idx` (`active`, `show_in_list`, `created_at`),
   KEY `list_modified_idx` (`active`, `show_in_list`, `modified_at`),
   KEY `sitemap_idx` (`active`, `show_in_sitemap`, `modified_at`)
@@ -51,3 +53,4 @@ INSERT INTO `settings` (`key`, `value`) VALUES
   ('head_code', ''),
   ('body_code', '')
 ON DUPLICATE KEY UPDATE `key` = VALUES(`key`);
+

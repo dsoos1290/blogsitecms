@@ -27,7 +27,7 @@ class Sitemap extends App {
     }
 
     $result = $this->db->query(
-      "SELECT id, modified_at FROM " . $this->table('posts') .
+      "SELECT id, slug, modified_at FROM " . $this->table('posts') .
       " WHERE active = 1 AND show_in_sitemap = 1 ORDER BY modified_at DESC"
     );
 
@@ -40,9 +40,13 @@ class Sitemap extends App {
     echo "  </url>\n";
 
     while ($row = $result->fetch_assoc()) {
-      $post_path = $post_slug !== ''
-        ? '/' . $post_slug . '/' . (int) $row['id']
-        : '/' . (int) $row['id'];
+      if ($row['slug'] !== null && $row['slug'] !== '') {
+        $post_path = '/' . $row['slug'];
+      } else {
+        $post_path = $post_slug !== ''
+          ? '/' . $post_slug . '/' . (int) $row['id']
+          : '/' . (int) $row['id'];
+      }
 
       echo "  <url>\n";
       echo '    <loc>' . htmlspecialchars($base . $post_path, ENT_QUOTES, 'UTF-8') . "</loc>\n";
@@ -54,3 +58,4 @@ class Sitemap extends App {
     exit;
   }
 }
+

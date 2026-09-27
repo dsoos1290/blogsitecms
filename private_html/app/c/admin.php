@@ -108,7 +108,7 @@ class Admin extends App {
     $offset = ($page - 1) * $per_page;
 
     $result = $this->db->query(
-      "SELECT id, title, active, show_in_list, show_in_sitemap, created_at, modified_at " .
+      "SELECT id, title, slug, active, show_in_list, show_in_sitemap, created_at, modified_at " .
       "FROM " . $this->table('posts') . " " .
       "ORDER BY " . $order . " DESC, id DESC " .
       "LIMIT " . $offset . ", " . $per_page
@@ -135,6 +135,7 @@ class Admin extends App {
     $post = array(
       'id' => 0,
       'title' => '',
+      'slug' => '',
       'content' => '',
       'active' => 1,
       'show_in_list' => 1,
@@ -163,7 +164,7 @@ class Admin extends App {
 
     $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
     $result = $this->db->query(
-      "SELECT id, title, content, active, show_in_list, show_in_sitemap " .
+      "SELECT id, title, slug, content, active, show_in_list, show_in_sitemap " .
       "FROM " . $this->table('posts') . " WHERE id = " . $id . " LIMIT 1"
     );
     $post = $result->fetch_assoc();
@@ -192,6 +193,7 @@ class Admin extends App {
 
   private function savePost($post) {
     $title = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $slug = isset($_POST['slug']) ? strtolower(trim($_POST['slug'])) : '';
     $content = isset($_POST['content']) ? $_POST['content'] : '';
 
     if ($title === '') {
@@ -199,7 +201,38 @@ class Admin extends App {
       return false;
     }
 
+    if ($slug !== '') {
+      if (strlen($slug) > 191) {
+        $this->flash('error', 'Slug must be 191 characters or fewer.');
+        return false;
+      }
+
+      if (!preg_match('/^[a-z][a-z0-9-]*$/', $slug)) {
+        $this->flash('error', 'Slug may contain lowercase letters, numbers and hyphens, and must start with a letter.');
+        return false;
+      }
+
+      if ($slug === 'admin' || $slug === 'post') {
+        $this->flash('error', 'This slug is reserved.');
+        return false;
+      }
+
+      $slug_sql_check = $this->db->real_escape_string($slug);
+      $slug_result = $this->db->query(
+        "SELECT id FROM " . $this->table('posts') .
+        " WHERE slug = '" . $slug_sql_check . "'" .
+        ((int) $post['id'] > 0 ? " AND id != " . (int) $post['id'] : '') .
+        " LIMIT 1"
+      );
+
+      if ($slug_result->fetch_assoc()) {
+        $this->flash('error', 'Slug is already in use.');
+        return false;
+      }
+    }
+
     $title_sql = $this->db->real_escape_string($title);
+    $slug_sql = $slug !== '' ? "'" . $this->db->real_escape_string($slug) . "'" : 'NULL';
     $content_sql = $this->db->real_escape_string($content);
     $active = isset($_POST['active']) ? 1 : 0;
     $show_in_list = isset($_POST['show_in_list']) ? 1 : 0;
@@ -209,6 +242,7 @@ class Admin extends App {
       $this->db->query(
         "UPDATE " . $this->table('posts') . " SET " .
         "title = '" . $title_sql . "', " .
+        "slug = " . $slug_sql . ", " .
         "content = '" . $content_sql . "', " .
         "active = " . $active . ", " .
         "show_in_list = " . $show_in_list . ", " .
@@ -219,8 +253,8 @@ class Admin extends App {
     } else {
       $this->db->query(
         "INSERT INTO " . $this->table('posts') .
-        " (title, content, active, show_in_list, show_in_sitemap, created_at, modified_at) VALUES (" .
-        "'" . $title_sql . "', '" . $content_sql . "', " .
+        " (title, slug, content, active, show_in_list, show_in_sitemap, created_at, modified_at) VALUES (" .
+        "'" . $title_sql . "', " . $slug_sql . ", '" . $content_sql . "', " .
         $active . ", " . $show_in_list . ", " . $show_in_sitemap . ", NOW(), NOW())"
       );
     }
@@ -474,4 +508,5 @@ class Admin extends App {
     $this->render('admin/password', 'admin_layout');
   }
 }
+
 

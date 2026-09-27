@@ -4,9 +4,13 @@
 
 <?php foreach ($posts as $post) { ?>
   <?php
-  $post_path = $post_slug !== ''
-    ? '/' . $post_slug . '/' . (int) $post['id']
-    : '/' . (int) $post['id'];
+  if (isset($post['slug']) && $post['slug'] !== null && $post['slug'] !== '') {
+    $post_path = '/' . $post['slug'];
+  } else {
+    $post_path = $post_slug !== ''
+      ? '/' . $post_slug . '/' . (int) $post['id']
+      : '/' . (int) $post['id'];
+  }
   ?>
   <article class="post-card">
     <h2><a href="<?php echo url($post_path); ?>"><?php echo htmlspecialchars($post['title']); ?></a></h2>
@@ -50,3 +54,4 @@
     <?php } ?>
   </nav>
 <?php } ?>
+

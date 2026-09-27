@@ -7,6 +7,11 @@
     <input type="text" name="title" value="<?php echo htmlspecialchars($post['title']); ?>" required>
   </label>
 
+  <label>Slug
+    <input type="text" name="slug" maxlength="191" value="<?php echo htmlspecialchars(isset($post['slug']) ? $post['slug'] : ''); ?>" placeholder="my-post">
+    <small>Optional. When set, this post is always available at /slug instead of an ID-based URL.</small>
+  </label>
+
   <label>HTML content
     <textarea name="content" rows="18"><?php echo htmlspecialchars($post['content']); ?></textarea>
   </label>
@@ -22,3 +27,4 @@
     <a href="<?php echo url('/admin/posts'); ?>">Cancel</a>
   </div>
 </form>
+

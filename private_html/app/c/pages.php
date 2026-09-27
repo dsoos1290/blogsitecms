@@ -88,7 +88,7 @@ class Pages extends App {
     $offset = ($page - 1) * $per_page;
 
     $result = $this->db->query(
-      "SELECT id, title, content, created_at, modified_at " .
+      "SELECT id, title, slug, content, created_at, modified_at " .
       "FROM " . $this->table('posts') .
       " WHERE active = 1 AND show_in_list = 1 " .
       "ORDER BY " . $order . " DESC, id DESC " .
@@ -184,44 +184,76 @@ class Pages extends App {
     $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
     $request_path = parse_url($request_uri, PHP_URL_PATH);
     $legacy_post_path = (BASE_URL !== '' ? BASE_URL : '') . '/post';
+    $is_legacy_query_url = $request_path === $legacy_post_path && isset($_GET['id']);
 
-    if ($request_path === $legacy_post_path && isset($_GET['id'])) {
-      $legacy_id = (int) $_GET['id'];
-      if ($legacy_id > 0) {
-        $this->redirect(
-          $post_slug !== ''
-            ? '/' . $post_slug . '/' . $legacy_id
-            : '/' . $legacy_id
-        );
-      }
-    }
-
-    if (!isset($_GET['id']) || !ctype_digit((string) $_GET['id'])) {
+    if (!isset($_GET['id']) || trim((string) $_GET['id']) === '') {
       header('HTTP/1.1 404 Not Found');
       die('Post not found.');
     }
 
-    $id = (int) $_GET['id'];
+    $value = trim((string) $_GET['id']);
+    $post = null;
+    $requested_by_slug = false;
 
-    if ($post_slug !== '' && !isset($_GET['slug'])) {
-      $this->redirect('/' . $post_slug . '/' . $id);
+    if (ctype_digit($value)) {
+      $id = (int) $value;
+
+      if ($id < 1) {
+        header('HTTP/1.1 404 Not Found');
+        die('Post not found.');
+      }
+
+      $result = $this->db->query(
+        "SELECT id, title, slug, content, created_at, modified_at " .
+        "FROM " . $this->table('posts') .
+        " WHERE id = " . $id . " AND active = 1 LIMIT 1"
+      );
+      $post = $result->fetch_assoc();
+    } else {
+      $slug = strtolower($value);
+
+      if (!preg_match('/^[a-z][a-z0-9-]*$/', $slug)) {
+        header('HTTP/1.1 404 Not Found');
+        die('Post not found.');
+      }
+
+      $slug_sql = $this->db->real_escape_string($slug);
+      $result = $this->db->query(
+        "SELECT id, title, slug, content, created_at, modified_at " .
+        "FROM " . $this->table('posts') .
+        " WHERE slug = '" . $slug_sql . "' AND active = 1 LIMIT 1"
+      );
+      $post = $result->fetch_assoc();
+      $requested_by_slug = true;
     }
-
-    if ($post_slug === '' && isset($_GET['slug'])) {
-      $this->redirect('/' . $id);
-    }
-
-    $result = $this->db->query(
-      "SELECT id, title, content, created_at, modified_at " .
-      "FROM " . $this->table('posts') .
-      " WHERE id = " . $id . " AND active = 1 LIMIT 1"
-    );
-
-    $post = $result->fetch_assoc();
 
     if (!$post) {
       header('HTTP/1.1 404 Not Found');
       die('Post not found.');
+    }
+
+    if ($post['slug'] !== null && $post['slug'] !== '') {
+      $canonical_path = '/' . $post['slug'];
+
+      if (!$requested_by_slug || $value !== $post['slug'] || $is_legacy_query_url || isset($_GET['slug'])) {
+        $this->redirect($canonical_path);
+      }
+    } else {
+      $canonical_path = $post_slug !== ''
+        ? '/' . $post_slug . '/' . (int) $post['id']
+        : '/' . (int) $post['id'];
+
+      if ($is_legacy_query_url) {
+        $this->redirect($canonical_path);
+      }
+
+      if ($post_slug !== '' && !isset($_GET['slug'])) {
+        $this->redirect($canonical_path);
+      }
+
+      if ($post_slug === '' && isset($_GET['slug'])) {
+        $this->redirect($canonical_path);
+      }
     }
 
     $order = $settings['post_order'] === 'modified_at'
@@ -245,3 +277,4 @@ class Pages extends App {
     $this->render('pages/post');
   }
 }
+

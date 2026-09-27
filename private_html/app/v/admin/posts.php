@@ -12,6 +12,7 @@
         <tr>
           <th>#</th>
           <th>Title</th>
+          <th>Slug</th>
           <th>Active</th>
           <th>List</th>
           <th>Sitemap</th>
@@ -25,6 +26,7 @@
           <tr>
             <td><?php echo (int) $post['id']; ?></td>
             <td><?php echo htmlspecialchars($post['title']); ?></td>
+            <td><?php echo $post['slug'] !== null && $post['slug'] !== '' ? htmlspecialchars($post['slug']) : '&mdash;'; ?></td>
             <td><?php echo $post['active'] ? 'Yes' : 'No'; ?></td>
             <td><?php echo $post['show_in_list'] ? 'Yes' : 'No'; ?></td>
             <td><?php echo $post['show_in_sitemap'] ? 'Yes' : 'No'; ?></td>
@@ -72,3 +74,4 @@
     <?php } ?>
   </nav>
 <?php } ?>
+
