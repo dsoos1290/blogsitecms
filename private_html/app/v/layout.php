@@ -21,9 +21,9 @@
 <div class="site-container">
   <header class="site-header">
     <?php if (isset($is_post) && $is_post) { ?>
-      <a class="site-title" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a>
+      <a class="site-title" href="<?php echo htmlspecialchars(url(isset($header_home) ? $header_home : '/'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a>
     <?php } else { ?>
-      <h1><a class="site-title" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a></h1>
+      <h1><a class="site-title" href="<?php echo htmlspecialchars(url(isset($header_home) ? $header_home : '/'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($settings['site_title']); ?></a></h1>
     <?php } ?>
     <?php if ($settings['site_description'] !== '') { ?>
       <p><?php echo nl2br(htmlspecialchars($settings['site_description'])); ?></p>
