@@ -61,6 +61,15 @@ a {
   border-radius: 8px;
 }
 
+.site-main > .post-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.post-card:last-of-type,
+.single-post {
+  margin-bottom: 0;
+}
+
 .post-card h2,
 .single-post h1,
 .admin-card h1 {
@@ -141,7 +150,7 @@ button {
 }
 
 .site-footer .copyright {
-  margin-top: 12px;
+  margin-top: 28px;
 }
 
 .admin-header {
@@ -298,4 +307,8 @@ textarea {
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+.disclaimer {
+  text-align: justify;
 }
