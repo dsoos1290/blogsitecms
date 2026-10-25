@@ -6,6 +6,28 @@ class App extends C {
     parent::__construct();
   }
 
+  protected function startSession() {
+    if (session_id() === '' && !session_start()) {
+      throw new RuntimeException('Could not start session.');
+    }
+  }
+
+  // Application flash messages work with explicitly started sessions, while
+  // APP_SESSION stays false to prevent the framework starting one on every page.
+  protected function flash($type, $message) {
+    $this->startSession();
+    $_SESSION['_flash'][] = array('type' => $type, 'message' => $message);
+  }
+
+  protected function consumeFlashes() {
+    if (session_id() === '') {
+      return array();
+    }
+    $flashes = isset($_SESSION['_flash']) ? $_SESSION['_flash'] : array();
+    unset($_SESSION['_flash']);
+    return $flashes;
+  }
+
   protected function settings() {
     if ($this->settings_cache !== null) {
       return $this->settings_cache;

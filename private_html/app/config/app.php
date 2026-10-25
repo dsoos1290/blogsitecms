@@ -6,7 +6,7 @@ define('APP_TZ', 'UTC');
 define('APP_ENV', 'dev'); // prod
 define('APP_LANG', 'en');
 define('APP_TITLE', 'BlogSite CMS');
-define('APP_SESSION', true); // flash
+define('APP_SESSION', false); // Sessions start explicitly in admin and the enabled contact form.
 // define('APP_URL', 'https://example.com');
 
 // define('APP_MAIL_BASE_URL', 'https://example.com' . BASE_URL);

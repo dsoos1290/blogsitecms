@@ -78,6 +78,11 @@ return array(
     )
   ),
   'POST' => array(
+    '/admin/messages/status' => array(
+      'controller' => 'admin',
+      'class' => 'Admin',
+      'action' => 'messageStatus'
+    ),
     '/{id}' => array(
       'controller' => 'contact',
       'class' => 'Contact',

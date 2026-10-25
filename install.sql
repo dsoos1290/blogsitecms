@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
   `email` varchar(254) NOT NULL,
   `message` text NOT NULL,
   `extra` text NOT NULL,
+  `status` varchar(16) NOT NULL DEFAULT 'pending',
   `notification_status` varchar(16) NOT NULL DEFAULT 'not_requested',
   `confirmation_status` varchar(16) NOT NULL DEFAULT 'not_requested',
   `created_at` datetime NOT NULL,

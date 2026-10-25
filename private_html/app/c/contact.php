@@ -8,9 +8,11 @@ class Contact extends App {
       header('HTTP/1.1 404 Not Found');
       die('Page not found.');
     }
+    $this->startSession();
     $values = array('name' => '', 'email' => '', 'message' => '');
     $error = '';
-    $captcha = APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY !== '' || APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY !== '';
+    $captcha = (defined('APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY') && APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY !== '')
+      || (defined('APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY') && APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY !== '');
     if ($this->requestIsPost()) {
       $this->checkCsrf();
       foreach ($values as $key => $value) {
@@ -48,7 +50,7 @@ class Contact extends App {
           }
           if ($settings['contact_confirmation'] === '1') {
             $sent = $this->sendMail($values['email'], $settings['contact_title'] . ' - message received',
-              "Thank you for contacting " . $settings['site_title'] . ".\n\nWe have received your message.\n\n" .
+              "Thank you for contacting " . $settings['site_title'] . ".\n\nWe have received your message and will do our best to reply as soon as possible.\n\n" .
               rtrim(APP_MAIL_BASE_URL, '/') . '/' . $settings['contact_slug'], '');
             $this->recordMailStatus($id, 'confirmation_status', $sent);
           }
@@ -65,7 +67,8 @@ class Contact extends App {
   }
 
   private function verifyCaptcha() {
-    if (APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY === '' || APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY === ''
+    if (!defined('APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY') || !defined('APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY')
+      || APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY === '' || APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY === ''
       || !isset($_POST['g-recaptcha-response']) || !is_string($_POST['g-recaptcha-response'])) {
       return false;
     }

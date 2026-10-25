@@ -30,7 +30,7 @@
   }
   window.contactCaptchaReady = function () {
     widget = grecaptcha.render('contact-captcha', {
-      sitekey: <?php echo json_encode(APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+      sitekey: <?php echo json_encode(defined('APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY') ? APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY : '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
       size: 'invisible', callback: function () { form.submit(); }, 'error-callback': failed
     });
   };

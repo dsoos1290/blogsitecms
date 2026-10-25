@@ -22,7 +22,7 @@
     <?php } ?>
   </header>
 
-  <?php foreach (flash() as $flash) { ?>
+  <?php foreach ($this->consumeFlashes() as $flash) { ?>
     <div class="notice notice-<?php echo $flash['type'] === 'error' ? 'error' : 'success'; ?>">
       <?php echo htmlspecialchars($flash['message']); ?>
     </div>

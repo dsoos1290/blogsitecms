@@ -75,15 +75,33 @@ Most blog-specific settings can be changed directly from the administration inte
 
 ## Contact form
 
-Existing installations must import `migrations/001_contact.sql` before using the
-contact form or the admin Messages page. Apply your `DB_PREFIX` to table names in
-the SQL if configured. New installations include the table in `install.sql`.
+New installations include the contact table in `install.sql`. Existing installations
+that already have `contact_messages` must run `migrations/002_contact_message_status.sql`
+once before deploying message status controls. Apply your `DB_PREFIX` to the table
+name in the SQL if configured.
 
 In Admin > Settings, configure the contact title, unique slug, optional description
 below the form, sitemap visibility, footer link and sender receipt confirmation.
 The form is disabled by default. Its title is also used in the footer and page heading.
 Admin > Messages lists saved messages, sender addresses and email submission status.
 Every message stores an empty `extra` TEXT field for future use.
+Messages are paginated with 20 per page. Nonempty `extra` values appear as escaped,
+small code text. Each message shows its status: Awaiting reply (pale yellow),
+Replied (pale green), or No reply needed (pale red). Changes require confirmation.
+Repeating the same action resets it to Awaiting reply. Status changes preserve
+the current page. Existing stored approved/rejected values retain their colors
+and are displayed using the new labels; no data migration is needed for this rename.
+
+The application disables automatic framework sessions with `APP_SESSION = false`.
+Only admin requests and the enabled contact page start a session explicitly, for
+authentication, CSRF tokens, submission throttling and flash messages. Reading
+posts, the homepage, the sitemap or a disabled contact page does not start one.
+This behavior is implemented entirely in the application; framework files are unchanged.
+For cookie-free public browsing, keep PHP's `session.auto_start` disabled and
+avoid custom injected scripts or hosting services that set cookies. Admin and
+contact visits still use a session cookie; disabling the form does not erase
+cookies a visitor already received. Contact data processing requires its own
+privacy disclosure, independently of cookies or CAPTCHA.
 
 Configure `APP_MAIL_API_KEY`, `APP_MAIL_FROM`, `APP_MAIL_FROM_NAME` and
 `APP_MAIL_BASE_URL` in `private_html/app/config/app.php`. The base URL includes the

@@ -2,6 +2,7 @@
 class Admin extends App {
   public function __construct() {
     parent::__construct();
+    $this->startSession();
   }
 
   public function index() {
@@ -501,15 +502,35 @@ class Admin extends App {
     $row = $count->fetch_assoc();
     $total_pages = max(1, (int) ceil($row['total'] / 20));
     $page = min($page, $total_pages);
-    $result = $this->db->query("SELECT id, name, email, message, created_at, notification_status, confirmation_status FROM " .
+    $result = $this->db->query("SELECT id, name, email, message, extra, status, created_at, notification_status, confirmation_status FROM " .
       $this->table('contact_messages') . " ORDER BY id DESC LIMIT " . (($page - 1) * 20) . ", 20");
     $messages = array();
     while ($row = $result->fetch_assoc()) {
       $row['display_date'] = $this->formatDate($row['created_at'], $settings['date_format'], $settings['timezone']);
       $messages[] = $row;
     }
-    $this->set(array('title' => 'Contact messages', 'messages' => $messages, 'page' => $page, 'total_pages' => $total_pages));
+    $this->set(array('title' => 'Contact messages', 'messages' => $messages, 'page' => $page, 'total_pages' => $total_pages, 'csrf' => $this->csrfToken()));
     $this->render('admin/messages', 'admin_layout');
+  }
+
+  public function messageStatus() {
+    $this->requireAdmin();
+    if (!$this->requestIsPost()) {
+      header('HTTP/1.1 405 Method Not Allowed');
+      die('Method not allowed.');
+    }
+    $this->checkCsrf();
+    $id = isset($_POST['id']) && is_string($_POST['id']) && ctype_digit($_POST['id']) ? (int) $_POST['id'] : 0;
+    $status = isset($_POST['status']) && is_string($_POST['status']) ? $_POST['status'] : '';
+    if ($id < 1 || !in_array($status, array('approved', 'rejected'), true)) {
+      header('HTTP/1.1 400 Bad Request');
+      die('Invalid message status.');
+    }
+    // One atomic update: repeating the selected action resets the message.
+    $this->db->query("UPDATE " . $this->table('contact_messages') .
+      " SET status = CASE WHEN status = '" . $status . "' THEN 'pending' ELSE '" . $status . "' END WHERE id = " . $id);
+    $page = isset($_POST['page']) && is_string($_POST['page']) && ctype_digit($_POST['page']) ? max(1, (int) $_POST['page']) : 1;
+    $this->redirect('/admin/messages?page=' . $page . '#message-' . $id);
   }
 
   public function password() {

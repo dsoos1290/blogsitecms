@@ -161,6 +161,15 @@ button {
 .contact-footer-link { margin-left: auto; }
 .contact-description { margin-top: 24px; }
 .message-content { overflow-wrap: anywhere; }
+.message-content h2 { margin-top: 0; }
+.message-status { margin: 0 0 8px; font-size: .9rem; }
+.message-pending { background: #fff9df; }
+.message-approved { background: #e8f5e9; }
+.message-rejected { background: #fdeaea; }
+.message-extra { white-space: pre-wrap; overflow-wrap: anywhere; }
+.message-content button[aria-pressed="true"] { outline: 2px solid #555; outline-offset: 2px; }
+/* Only tighten the gap when a public flash notice directly precedes the main content. */
+.site-container > .notice + .site-main { padding-top: 0; }
 fieldset { margin: 24px 0; border: 1px solid #ddd; border-radius: 6px; padding: 18px; }
 
 .admin-header {
