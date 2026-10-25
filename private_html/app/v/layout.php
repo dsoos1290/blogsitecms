@@ -46,8 +46,12 @@
     <?php if ($settings['disclaimer'] !== '') { ?>
       <div class="disclaimer"><?php echo nl2br(htmlspecialchars($settings['disclaimer'])); ?></div>
     <?php } ?>
-    <?php if ($settings['copyright'] !== '') { ?>
-      <div class="copyright"><?php echo $settings['copyright']; ?></div>
+    <?php if ($settings['copyright'] !== '' || ($settings['contact_enabled'] === '1' && $settings['contact_footer'] === '1')) { ?>
+      <div class="copyright"><span><?php echo $settings['copyright']; ?></span>
+        <?php if ($settings['contact_enabled'] === '1' && $settings['contact_footer'] === '1') { ?>
+          <a class="contact-footer-link" href="<?php echo htmlspecialchars(url('/' . $settings['contact_slug']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($settings['contact_title'], ENT_QUOTES, 'UTF-8'); ?></a>
+        <?php } ?>
+      </div>
     <?php } ?>
   </footer>
 </div>

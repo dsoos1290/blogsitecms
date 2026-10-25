@@ -13,6 +13,18 @@ CREATE TABLE IF NOT EXISTS `settings` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `contact_messages` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(254) NOT NULL,
+  `message` text NOT NULL,
+  `extra` text NOT NULL,
+  `notification_status` varchar(16) NOT NULL DEFAULT 'not_requested',
+  `confirmation_status` varchar(16) NOT NULL DEFAULT 'not_requested',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -51,6 +63,13 @@ INSERT INTO `settings` (`key`, `value`) VALUES
   ('continue_text', 'Continue'),
   ('back_text', 'Back'),
   ('head_code', ''),
-  ('body_code', '')
+  ('body_code', ''),
+  ('contact_enabled', '0'),
+  ('contact_sitemap', '0'),
+  ('contact_footer', '0'),
+  ('contact_title', 'Contact'),
+  ('contact_slug', 'contact'),
+  ('contact_description', ''),
+  ('contact_confirmation', '0')
 ON DUPLICATE KEY UPDATE `key` = VALUES(`key`);
 

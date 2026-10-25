@@ -39,6 +39,10 @@ class Sitemap extends App {
     echo '    <loc>' . htmlspecialchars($base . '/', ENT_QUOTES, 'UTF-8') . "</loc>\n";
     echo "  </url>\n";
 
+    if ($settings['contact_enabled'] === '1' && $settings['contact_sitemap'] === '1') {
+      echo '  <url><loc>' . htmlspecialchars($base . '/' . $settings['contact_slug'], ENT_QUOTES, 'UTF-8') . "</loc></url>\n";
+    }
+
     while ($row = $result->fetch_assoc()) {
       if ($row['slug'] !== null && $row['slug'] !== '') {
         $post_path = '/' . $row['slug'];

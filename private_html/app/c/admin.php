@@ -217,6 +217,12 @@ class Admin extends App {
         return false;
       }
 
+      $settings = $this->settings();
+      if ($slug === $settings['contact_slug']) {
+        $this->flash('error', 'This slug is reserved for the contact page.');
+        return false;
+      }
+
       $slug_sql_check = $this->db->real_escape_string($slug);
       $slug_result = $this->db->query(
         "SELECT id FROM " . $this->table('posts') .
@@ -359,6 +365,27 @@ class Admin extends App {
         $post_slug = '';
       }
 
+      $contact_title = isset($_POST['contact_title']) && is_string($_POST['contact_title']) ? trim($_POST['contact_title']) : '';
+      $contact_slug = isset($_POST['contact_slug']) && is_string($_POST['contact_slug']) ? strtolower(trim($_POST['contact_slug'])) : '';
+      if ($contact_title === '' || strlen($contact_title) > 255
+        || strlen($contact_slug) > 191 || !preg_match('/^[a-z][a-z0-9-]*$/', $contact_slug)
+        || in_array($contact_slug, array('admin', 'post', $page_slug, $post_slug), true)) {
+        $this->flash('error', 'Contact title is required (maximum 255 bytes). Contact slug must be unique, start with a letter and contain only lowercase letters, numbers and hyphens.');
+        $this->redirect('/admin/settings');
+      }
+      $contact_slug_sql = $this->db->real_escape_string($contact_slug);
+      $contact_conflict = $this->db->query("SELECT id FROM " . $this->table('posts') . " WHERE slug = '" . $contact_slug_sql . "' LIMIT 1");
+      if ($contact_conflict->fetch_assoc()) {
+        $this->flash('error', 'Contact slug is already used by a post.');
+        $this->redirect('/admin/settings');
+      }
+      foreach (array('contact_enabled', 'contact_sitemap', 'contact_footer', 'contact_confirmation') as $key) {
+        $this->saveSetting($key, isset($_POST[$key]) ? '1' : '0');
+      }
+      $this->saveSetting('contact_title', $contact_title);
+      $this->saveSetting('contact_slug', $contact_slug);
+      $this->saveSetting('contact_description', isset($_POST['contact_description']) && is_string($_POST['contact_description']) ? trim($_POST['contact_description']) : '');
+
       $continue_text = isset($_POST['continue_text']) ? trim($_POST['continue_text']) : 'Continue';
       if ($continue_text === '') {
         $continue_text = 'Continue';
@@ -464,6 +491,25 @@ class Admin extends App {
       'csrf' => $this->csrfToken()
     ));
     $this->render('admin/settings', 'admin_layout');
+  }
+
+  public function messages() {
+    $this->requireAdmin();
+    $settings = $this->settings();
+    $page = isset($_GET['page']) && is_string($_GET['page']) && ctype_digit($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+    $count = $this->db->query("SELECT COUNT(*) AS total FROM " . $this->table('contact_messages'));
+    $row = $count->fetch_assoc();
+    $total_pages = max(1, (int) ceil($row['total'] / 20));
+    $page = min($page, $total_pages);
+    $result = $this->db->query("SELECT id, name, email, message, created_at, notification_status, confirmation_status FROM " .
+      $this->table('contact_messages') . " ORDER BY id DESC LIMIT " . (($page - 1) * 20) . ", 20");
+    $messages = array();
+    while ($row = $result->fetch_assoc()) {
+      $row['display_date'] = $this->formatDate($row['created_at'], $settings['date_format'], $settings['timezone']);
+      $messages[] = $row;
+    }
+    $this->set(array('title' => 'Contact messages', 'messages' => $messages, 'page' => $page, 'total_pages' => $total_pages));
+    $this->render('admin/messages', 'admin_layout');
   }
 
   public function password() {

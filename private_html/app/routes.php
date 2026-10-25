@@ -56,6 +56,11 @@ return array(
       'class' => 'Admin',
       'action' => 'settingsPage'
     ),
+    '/admin/messages' => array(
+      'controller' => 'admin',
+      'class' => 'Admin',
+      'action' => 'messages'
+    ),
     '/admin/password' => array(
       'controller' => 'admin',
       'class' => 'Admin',
@@ -73,6 +78,11 @@ return array(
     )
   ),
   'POST' => array(
+    '/{id}' => array(
+      'controller' => 'contact',
+      'class' => 'Contact',
+      'action' => 'index'
+    ),
     '/admin/login' => array(
       'controller' => 'admin',
       'class' => 'Admin',

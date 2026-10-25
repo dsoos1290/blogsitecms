@@ -8,3 +8,12 @@ define('APP_LANG', 'en');
 define('APP_TITLE', 'BlogSite CMS');
 define('APP_SESSION', true); // flash
 // define('APP_URL', 'https://example.com');
+
+// define('APP_MAIL_BASE_URL', 'https://example.com' . BASE_URL);
+// define('APP_MAIL_FROM', 'noreply@example.com');
+// define('APP_MAIL_FROM_NAME', APP_TITLE);
+// define('APP_MAIL_API_KEY', ''); // Resend API key (re_...), never commit a real key.
+// define('APP_MAIL_TO', ''); // Optional administrator notification recipient.
+// Invisible reCAPTCHA v2. Leave both empty to accept messages without CAPTCHA.
+// define('APP_GOOGLE_HIDDEN_RECAPTCHA_SITE_KEY', '');
+// define('APP_GOOGLE_HIDDEN_RECAPTCHA_SECRET_KEY', '');

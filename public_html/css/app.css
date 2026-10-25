@@ -151,7 +151,17 @@ button {
 
 .site-footer .copyright {
   margin-top: 28px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
+
+.contact-footer-link { margin-left: auto; }
+.contact-description { margin-top: 24px; }
+.message-content { overflow-wrap: anywhere; }
+fieldset { margin: 24px 0; border: 1px solid #ddd; border-radius: 6px; padding: 18px; }
 
 .admin-header {
   display: flex;
@@ -192,6 +202,7 @@ label {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"],
 input[type="number"],
 textarea,

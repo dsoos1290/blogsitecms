@@ -14,6 +14,7 @@
       <nav>
         <a href="<?php echo url('/admin/posts'); ?>">Posts</a>
         <a href="<?php echo url('/admin/settings'); ?>">Settings</a>
+        <a href="<?php echo url('/admin/messages'); ?>">Messages</a>
         <a href="<?php echo url('/admin/password'); ?>">Password</a>
         <a href="<?php echo url('/'); ?>" target="_blank">View site</a>
         <a href="<?php echo url('/admin/logout'); ?>">Logout</a>

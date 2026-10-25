@@ -28,7 +28,14 @@ class App extends C {
       'continue_text' => 'Continue',
       'back_text' => 'Back',
       'head_code' => '',
-      'body_code' => ''
+      'body_code' => '',
+      'contact_enabled' => '0',
+      'contact_sitemap' => '0',
+      'contact_footer' => '0',
+      'contact_title' => 'Contact',
+      'contact_slug' => 'contact',
+      'contact_description' => '',
+      'contact_confirmation' => '0'
     );
 
     $result = $this->db->query(

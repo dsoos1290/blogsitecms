@@ -167,6 +167,14 @@ class Pages extends App {
   public function post() {
     $settings = $this->settings();
 
+    $request_path = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
+    if (rtrim($request_path, '/') === BASE_URL . '/' . $settings['contact_slug']) {
+      require_once dirname(__FILE__) . '/contact.php';
+      $contact = new Contact();
+      $contact->index();
+      return;
+    }
+
     $post_slug = isset($settings['post_slug']) ? trim($settings['post_slug']) : '';
     $page_slug = isset($settings['page_slug']) ? trim($settings['page_slug']) : 'page';
 

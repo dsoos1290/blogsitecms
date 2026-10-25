@@ -97,6 +97,23 @@
     <textarea name="body_code" rows="8"><?php echo htmlspecialchars($settings['body_code']); ?></textarea>
   </label>
 
+  <fieldset>
+    <legend>Contact form</legend>
+    <label><input type="checkbox" name="contact_enabled" value="1"<?php echo $settings['contact_enabled'] === '1' ? ' checked' : ''; ?>> Enable contact form</label>
+    <label><input type="checkbox" name="contact_sitemap" value="1"<?php echo $settings['contact_sitemap'] === '1' ? ' checked' : ''; ?>> Include in sitemap</label>
+    <label><input type="checkbox" name="contact_footer" value="1"<?php echo $settings['contact_footer'] === '1' ? ' checked' : ''; ?>> Show link on the right of the copyright row</label>
+    <label>Contact page title
+      <input type="text" name="contact_title" maxlength="255" required value="<?php echo htmlspecialchars($settings['contact_title'], ENT_QUOTES, 'UTF-8'); ?>">
+    </label>
+    <label>Contact page slug
+      <input type="text" name="contact_slug" maxlength="191" pattern="[a-z][a-z0-9-]*" required value="<?php echo htmlspecialchars($settings['contact_slug'], ENT_QUOTES, 'UTF-8'); ?>">
+    </label>
+    <label>Description below the form
+      <textarea name="contact_description" rows="4"><?php echo htmlspecialchars($settings['contact_description'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+    </label>
+    <label><input type="checkbox" name="contact_confirmation" value="1"<?php echo $settings['contact_confirmation'] === '1' ? ' checked' : ''; ?>> Email the sender a receipt confirmation</label>
+    <p><small>Email and optional invisible reCAPTCHA keys are configured in config/app.php. Messages are saved even if email delivery fails.</small></p>
+  </fieldset>
   <button type="submit">Save settings</button>
 </form>
 
