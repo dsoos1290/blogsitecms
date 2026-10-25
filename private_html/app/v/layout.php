@@ -49,7 +49,11 @@
     <?php if ($settings['copyright'] !== '' || ($settings['contact_enabled'] === '1' && $settings['contact_footer'] === '1')) { ?>
       <div class="copyright"><span><?php echo $settings['copyright']; ?></span>
         <?php if ($settings['contact_enabled'] === '1' && $settings['contact_footer'] === '1') { ?>
+          <?php if (!empty($is_contact)) { ?>
+          <span class="contact-footer-link" aria-current="page"><?php echo htmlspecialchars($settings['contact_title'], ENT_QUOTES, 'UTF-8'); ?></span>
+          <?php } else { ?>
           <a class="contact-footer-link" href="<?php echo htmlspecialchars(url('/' . $settings['contact_slug']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($settings['contact_title'], ENT_QUOTES, 'UTF-8'); ?></a>
+          <?php } ?>
         <?php } ?>
       </div>
     <?php } ?>

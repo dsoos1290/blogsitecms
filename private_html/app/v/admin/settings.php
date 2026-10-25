@@ -108,7 +108,7 @@
     <label>Contact page slug
       <input type="text" name="contact_slug" maxlength="191" pattern="[a-z][a-z0-9-]*" required value="<?php echo htmlspecialchars($settings['contact_slug'], ENT_QUOTES, 'UTF-8'); ?>">
     </label>
-    <label>Description below the form
+    <label>Description below the form (HTML)
       <textarea name="contact_description" rows="4"><?php echo htmlspecialchars($settings['contact_description'], ENT_QUOTES, 'UTF-8'); ?></textarea>
     </label>
     <label><input type="checkbox" name="contact_confirmation" value="1"<?php echo $settings['contact_confirmation'] === '1' ? ' checked' : ''; ?>> Email the sender a receipt confirmation</label>

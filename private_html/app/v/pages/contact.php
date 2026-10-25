@@ -15,7 +15,7 @@
     <button type="submit">Send message</button>
   </form>
   <?php if ($settings['contact_description'] !== '') { ?>
-    <div class="contact-description"><?php echo nl2br(htmlspecialchars($settings['contact_description'], ENT_QUOTES, 'UTF-8')); ?></div>
+    <div class="contact-description"><?php echo $settings['contact_description']; ?></div>
   <?php } ?>
   <?php if ($settings['list_layout'] === 'footer') { ?>
     <div class="post-footer"><a class="button" href="<?php echo url('/'); ?>"><?php echo htmlspecialchars($settings['back_text']); ?></a></div>

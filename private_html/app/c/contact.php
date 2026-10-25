@@ -44,13 +44,13 @@ class Contact extends App {
           $_SESSION['contact_last_sent'] = time();
           if (APP_MAIL_TO !== '') {
             $sent = $this->sendMail(APP_MAIL_TO, $settings['contact_title'] . ' - new message',
-              "Name: " . $values['name'] . "\nEmail: " . $values['email'] . "\n\n" . $values['message'] .
-              "\n\n" . rtrim(APP_MAIL_BASE_URL, '/') . '/admin/messages', $values['email']);
+              "Name: " . $values['name'] . "\nEmail: " . $values['email'] . "\n\n" . $values['message'],
+              $values['email'], $id);
             $this->recordMailStatus($id, 'notification_status', $sent);
           }
           if ($settings['contact_confirmation'] === '1') {
             $sent = $this->sendMail($values['email'], $settings['contact_title'] . ' - message received',
-              "Thank you for contacting " . $settings['site_title'] . ".\n\nWe have received your message and will do our best to reply as soon as possible.\n\n" .
+              "Thank you for contacting " . $settings['site_title'] . ".\n\nYour message has been received. Every effort will be made to respond as soon as possible.\n\n" .
               rtrim(APP_MAIL_BASE_URL, '/') . '/' . $settings['contact_slug'], '');
             $this->recordMailStatus($id, 'confirmation_status', $sent);
           }
@@ -61,7 +61,7 @@ class Contact extends App {
     }
     $this->set(array('title' => $settings['contact_title'] . ' - ' . $settings['site_title'],
       'meta_description' => $settings['site_description'], 'settings' => $settings,
-      'is_post' => true, 'values' => $values, 'error' => $error,
+      'is_post' => true, 'is_contact' => true, 'values' => $values, 'error' => $error,
       'csrf' => $this->csrfToken(), 'captcha' => $captcha));
     $this->render('pages/contact');
   }
@@ -78,7 +78,7 @@ class Contact extends App {
     return is_array($result) && !empty($result['success']);
   }
 
-  private function sendMail($to, $subject, $body, $reply_to) {
+  private function sendMail($to, $subject, $body, $reply_to, $message_id = 0) {
     if (APP_MAIL_API_KEY === '' || !filter_var(APP_MAIL_FROM, FILTER_VALIDATE_EMAIL)
       || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
       return false;
@@ -87,6 +87,9 @@ class Contact extends App {
       'to' => array($to), 'subject' => str_replace(array("\r", "\n"), ' ', $subject), 'text' => $body);
     if ($reply_to !== '') {
       $payload['reply_to'] = $reply_to;
+    }
+    if ((int) $message_id > 0) {
+      $payload['headers'] = array('X-Contact-Message-ID' => (string) (int) $message_id);
     }
     $json = json_encode($payload);
     if ($json === false) {
